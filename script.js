@@ -13,6 +13,7 @@ function insertFunction(functionName) {
 // Function to clear the input field
 function clearInput() {
     document.getElementById('input_expression').value = '';
+    document.getElementById('error_message').textContent = ''; // Clear error message
 }
 
 // Function to toggle the sign of the current number in the input field
@@ -58,28 +59,31 @@ function deleteLast() {
     }
 }
 
-function sendCalculation() {
+// Function to handle form submission
+function handleCalculation(event) {
+    event.preventDefault(); // Prevent form from submitting
+
     const inputField = document.getElementById('input_expression');
     const expression = inputField.value;
 
-    // Send the expression to the external server (eternitycalculatorteamo.co)
-    fetch('https://eternitycalculatorteamo.co/calculate', {
+    fetch('/', { // Endpoint is '/'
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer pk1_83df53988e8796f23db912b80c0d0930a41805ec361d9571a1b76ab5a581b46a' // Use the Public Key
         },
-        body: JSON.stringify({ expression: expression }), // Send the input as JSON data
+        body: JSON.stringify({ expression: expression }),
     })
+    
         .then(response => response.json()) // Parse the response as JSON
         .then(data => {
             if (data.result !== undefined) {
-                alert('Result: ' + data.result); // Display the result to the user
+                inputField.value = data.result; // Display the result in the input field
+                document.getElementById('error_message').textContent = ''; // Clear any previous error
             } else {
-                alert('Error: ' + data.error); // Display an error if something went wrong
+                document.getElementById('error_message').textContent = 'Error: ' + data.error; // Display an error if something went wrong
             }
         })
         .catch(error => {
-            alert('There was an error connecting to the server: ' + error); // Handle connection errors
+            document.getElementById('error_message').textContent = 'There was an error connecting to the server: ' + error; // Handle connection errors
         });
 }
