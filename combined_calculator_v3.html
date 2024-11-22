@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Calculator</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    
+
+</head>
+<body>
+    <div class="calculator">
+      <form method="POST" action="{{ url_for('combined_calculator') }}">
+        <div class="display">
+            <input type="text" id="input_expression" name="input_expression" placeholder="e.g. 1 + log_b(10, 2)"
+                   value="{% if result %}{{ result }}{% elif expression %}{{ expression }}{% endif %}">
+        </div>
+        <div id="error_message" class="error-display">
+            {% if error %}
+                {{ error }}
+            {% endif %}
+        </div>
+        <div class="buttons">
+            <!-- First Row -->
+            <button class="button" type="button" onclick="insertFunction('log_b')">LOG</button>
+            <button class="button" type="button" onclick="insertFunction('arccos')">ARCCOS</button>
+            <button class="button" type="button" onclick="insertFunction('exp')">EXP</button>
+            <button class="button" type="button" onclick="insertFunction('gamma')">GAMMA</button>
+            <button class="button" type="button" onclick="insertFunction('mad')">MAD</button>
+
+            <!-- Second Row -->
+            <button class="button" type="button" onclick="insertFunction('standard_deviation')">STD</button>
+            <button class="button" type="button" onclick="insertValue('(')">(</button>
+            <button class="button" type="button" onclick="insertValue(')')">)</button>
+            <button class="button" type="button" onclick="insertFunction('sinh')">SINH</button>
+            <button class="button" type="button" onclick="insertFunction('power')">POW</button>
+
+            <!-- Third Row -->
+            <button class="button" type="button" onclick="insertValue('7')">7</button>
+            <button class="button" type="button" onclick="insertValue('8')">8</button>
+            <button class="button" type="button" onclick="insertValue('9')">9</button>
+            <button class="button" type="button" onclick="deleteLast()">DEL</button>
+            <button class="button" type="button" onclick="clearInput()">C</button>
+
+            <!-- Fourth Row -->
+            <button class="button" type="button" onclick="insertValue('4')">4</button>
+            <button class="button" type="button" onclick="insertValue('5')">5</button>
+            <button class="button" type="button" onclick="insertValue('6')">6</button>
+            <button class="button" type="button" onclick="insertValue(' + ')">+</button>
+            <button class="button" type="button" onclick="insertValue(' - ')">-</button>
+
+            <!-- Fifth Row (Advanced Functions) -->
+            <button class="button" type="button" onclick="insertValue('1')">1</button>
+            <button class="button" type="button" onclick="insertValue('2')">2</button>
+            <button class="button" type="button" onclick="insertValue('3')">3</button>
+            <button class="button" type="button" onclick="insertValue(' * ')">*</button>
+            <button class="button" type="button" onclick="insertValue(' / ')">/</button>
+
+            <!-- Sixth Row (More Advanced Functions) -->
+            <button class="button" type="button" onclick="insertValue('0')">0</button>
+            <button class="button" type="button" onclick="insertDecimal()">.</button>
+            <button class="button" type="button" onclick="toggleSign()">+/-</button>
+            <button class="button" type="button" onclick="insertValue(', ')">,</button>
+            <button class="button" type="submit">=</button>
+        </div>
+      </form>
+    </div>
+
+    <script src="/static/js/script.js"></script>
+</body>
+</html>
