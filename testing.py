@@ -1,9 +1,8 @@
 from flask import Flask, render_template, request
-from calculator import EternityCalculator
+from e import EternityCalculator  # Make sure the import matches your filename
 import ast
 
 app = Flask(__name__)
-
 
 # Mapping user-friendly function names to calculator methods
 function_mapping = {
@@ -16,7 +15,6 @@ function_mapping = {
     'sinh': lambda calc, x: calc.calculate_hyperbolic_sine(x),
     'power': lambda calc, base, exponent: calc.PowerOf(base, exponent),
 }
-
 
 def safe_eval(expression, calculator):
     """
@@ -62,8 +60,6 @@ def safe_eval(expression, calculator):
 
     return eval_node(node.body)
 
-
-
 @app.route('/', methods=['GET', 'POST'])
 def combined_calculator():
     error = None
@@ -79,6 +75,6 @@ def combined_calculator():
 
     return render_template('combined_calculator_v3.html', result=result, error=error)
 
-
+# Add this block to start the Flask application
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
