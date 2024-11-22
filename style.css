@@ -51,6 +51,19 @@ body {
     color: #aaa;
 }
 
+.error-display {
+    background-color: #ffcccc;
+    border-radius: 20px;
+    padding: 15px;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #d8000c;
+    width: 95%;
+    margin-top: 15px;
+    position: relative;
+}
+
 .buttons {
     display: grid;
     grid-template-columns: repeat(5, 1fr); /* Changed to 5 columns */
