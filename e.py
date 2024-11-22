@@ -2,19 +2,29 @@ class EternityCalculator:
     def manual_sum(self, *args):
         total = 0
         for num in args:
+            if not isinstance(num, (int, float)):
+                raise TypeError(f"Invalid input: {num}. Expected an integer or float.")
             total += num
         return total
 
     # Helper function to calculate absolute value manually
     def manual_abs(self, value):
+        if not isinstance(value, (int, float)):
+            raise TypeError(f"Invalid input: {value}. Expected an integer or float.")
         if value < 0:
             return -value
         return value
+
     def calculate_standard_deviation(self, *args):
+        if not args:
+            raise ValueError("At least one number is required to calculate standard deviation.")
+
         # Calculate the mean manually
         total = 0
         count = 0
         for x in args:
+            if not isinstance(x, (int, float)):
+                raise TypeError(f"Invalid input: {x}. Expected an integer or float.")
             total += x
             count += 1
         mean = total / count
@@ -27,6 +37,8 @@ class EternityCalculator:
 
         # Calculate square root using a manual method (Newton's method), without abs()
         def sqrt(n):
+            if n < 0:
+                raise ValueError("Cannot calculate the square root of a negative number.")
             approx = n / 2.0
             better_approx = (approx + n / approx) / 2.0
             while (approx - better_approx) > 0.00001 or (
@@ -39,6 +51,8 @@ class EternityCalculator:
 
     # Gamma function using Lanczos approximation without built-in math functions
     def calculate_gamma(self, x):
+        if not isinstance(x, (int, float)):
+            raise TypeError(f"Invalid input: {x}. Expected an integer or float.")
         if x <= 0 and x == int(x):
             raise ValueError("Gamma function is undefined for non-positive integers.")
 
@@ -68,24 +82,28 @@ class EternityCalculator:
     # Mean Absolute Deviation (MAD) function
     def calculate_mad(self, *args):
         if not args:
-            return 0
+            raise ValueError("At least one number is required to calculate MAD.")
         mean = self.manual_sum(*args) / len(args)
         absolute_sum = self.manual_sum(*(self.manual_abs(x - mean) for x in args))
         mad = absolute_sum / len(args)
         return mad
 
     # Logarithm function using the Newton-Raphson method for natural log
-    # Logarithm function using the Newton-Raphson method for natural log
     def calculate_logarithm(self, value, base=None):
+        if not isinstance(value, (int, float)) or (base is not None and not isinstance(base, (int, float))):
+            raise TypeError("Invalid input: Expected integers or floats for value and base.")
         if value <= 0:
             raise ValueError("Logarithm is undefined for non-positive values.")
+        if base is not None and (base <= 0 or base == 1):
+            raise ValueError("Logarithm base must be positive and not equal to 1.")
+
         if base is None:
             base = self.custom_e()
-        elif base <= 0 or base == 1:
-            raise ValueError("Logarithm base must be positive and not equal to 1.")
 
         # Calculate the natural logarithm using the Newton-Raphson method
         def natural_logarithm(x):
+            if x <= 0:
+                raise ValueError("Cannot compute natural logarithm of non-positive values.")
             tolerance = 1e-10
             n = 0
             result = x - 1
@@ -103,11 +121,15 @@ class EternityCalculator:
 
     # Exponential function for a * b^x without using built-in power
     def calculate_exponential(self, a, b, x):
+        if not isinstance(a, (int, float)) or not isinstance(b, (int, float)) or not isinstance(x, (int, float)):
+            raise TypeError("Invalid input: Expected integers or floats for a, b, and x.")
         result = a * self.PowerOf(b, x)
         return result
 
     # Arccos function approximation using Taylor series expansion
     def calculate_arccos(self, x):
+        if not isinstance(x, (int, float)):
+            raise TypeError(f"Invalid input: {x}. Expected an integer or float.")
         if x < -1 or x > 1:
             raise ValueError("Input for arccos must be in the range [-1, 1].")
 
@@ -126,15 +148,22 @@ class EternityCalculator:
 
     # Hyperbolic sine function using approximation of e
     def calculate_hyperbolic_sine(self, x):
+        if not isinstance(x, (int, float)):
+            raise TypeError(f"Invalid input: {x}. Expected an integer or float.")
         e = 2.718281828459045235360287471352
         result = ((e ** x) - e ** (-x)) / 2
         return result
 
     # Power function without using built-in functions
     def PowerOf(self, base, power):
+        if not isinstance(base, (int, float)) or not isinstance(power, (int, float)):
+            raise TypeError("Invalid input: Expected integers or floats for base and power.")
         # Handle zero base cases
         if base == 0:
-            return 0 if power > 0 else float('inf')
+            if power > 0:
+                return 0
+            else:
+                raise ValueError("0 cannot be raised to a non-positive power.")
 
         # If power is zero, result is 1
         if power == 0:
@@ -160,6 +189,8 @@ class EternityCalculator:
         return 2.718281828459045
 
     def custom_sin(self, x):
+        if not isinstance(x, (int, float)):
+            raise TypeError(f"Invalid input: {x}. Expected an integer or float.")
         # Taylor series expansion for sin(x)
         sine = 0
         term = x
@@ -172,6 +203,8 @@ class EternityCalculator:
         return sine
 
     def custom_exp(self, x):
+        if not isinstance(x, (int, float)):
+            raise TypeError(f"Invalid input: {x}. Expected an integer or float.")
         # Taylor series expansion for exp(x)
         result = 1
         term = 1
@@ -183,6 +216,8 @@ class EternityCalculator:
         return result
 
     def custom_sqrt(self, x):
+        if not isinstance(x, (int, float)):
+            raise TypeError(f"Invalid input: {x}. Expected an integer or float.")
         # Newton's method for square root
         if x < 0:
             raise ValueError("Cannot compute square root of a negative number.")
