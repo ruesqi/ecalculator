@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, jsonify
-import requests
-from eternitycalculator import EternityCalculator
+from flask import Flask, render_template, request
+from calculator import EternityCalculator
+import ast
 
 app = Flask(__name__)
+
 
 # Mapping user-friendly function names to calculator methods
 function_mapping = {
@@ -16,6 +17,53 @@ function_mapping = {
     'power': lambda calc, base, exponent: calc.PowerOf(base, exponent),
 }
 
+
+def safe_eval(expression, calculator):
+    """
+    Safely evaluates a user-provided mathematical expression.
+    Supports functions defined in function_mapping.
+    """
+    # Parse the user input as an AST (Abstract Syntax Tree)
+    node = ast.parse(expression, mode='eval')
+
+    def eval_node(node):
+        try:
+            if isinstance(node, ast.BinOp):  # For binary operators like +, -, *, /
+                left = eval_node(node.left)
+                right = eval_node(node.right)
+                if isinstance(node.op, ast.Add):
+                    return left + right
+                elif isinstance(node.op, ast.Sub):
+                    return left - right
+                elif isinstance(node.op, ast.Mult):
+                    return left * right
+                elif isinstance(node.op, ast.Div):
+                    return left / right
+                else:
+                    raise ValueError("Unsupported operator")
+            elif isinstance(node, ast.UnaryOp):  # For unary operations like negation (-x)
+                if isinstance(node.op, ast.USub):  # Handle negation
+                    return -eval_node(node.operand)
+                else:
+                    raise ValueError("Unsupported unary operation")
+            elif isinstance(node, ast.Call):  # For function calls
+                func_name = node.func.id
+                if func_name in function_mapping:
+                    args = [eval_node(arg) for arg in node.args]
+                    return function_mapping[func_name](calculator, *args)
+                else:
+                    raise ValueError(f"Unsupported function: {func_name}")
+            elif isinstance(node, ast.Num):  # For numbers
+                return node.n
+            else:
+                raise ValueError("Unsupported expression")
+        except TypeError as e:
+            raise ValueError(f"TypeError: {str(e)}. Check your function arguments.")
+
+    return eval_node(node.body)
+
+
+
 @app.route('/', methods=['GET', 'POST'])
 def combined_calculator():
     error = None
@@ -24,20 +72,8 @@ def combined_calculator():
         input_expression = request.form.get('input_expression')
 
         try:
-            # Send the request to the external server
-            response = requests.post(
-                'https://eternitycalculatorteamo.co/calculate',
-                json={'expression': input_expression},
-                headers={
-                    'Content-Type': 'application/json',
-                    'Authorization': f'Bearer sk1_66727cad9e50a7c7a8d3db2ecc9c05de3cd87260c1cbf5d04c07d5e97829403d'  # Use Secret Key
-                }
-            )
-            data = response.json()
-            if response.status_code == 200:
-                result = data.get('result', 'No result returned')
-            else:
-                error = data.get('error', 'An error occurred while calculating.')
+            calculator = EternityCalculator()
+            result = safe_eval(input_expression, calculator)
         except ValueError as e:
             error = str(e)
 
